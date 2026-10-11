@@ -1,53 +1,46 @@
 
 
+ 
 <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>GameZone - Car Racing</title>
+<title>GameZone Car Racing</title>
 <style>
-*{box-sizing:border-box}
+*{box-sizing:border-box;touch-action:manipulation}
 body{margin:0;background:#101827;color:white;font-family:Arial;text-align:center}
-h1{color:#39e58c;margin:16px 0 5px}
-p{margin:8px}
-#score{font-size:20px;color:#ffd447}
-#game{position:relative;width:min(94vw,360px);height:480px;
-margin:12px auto;background:#333;border:4px solid white;
-overflow:hidden;border-radius:12px}
-.roadline{position:absolute;left:49%;width:5px;height:55px;
-background:#fff;opacity:.8}
-.car{position:absolute;width:42px;height:66px;border-radius:9px;
-border:3px solid white;box-shadow:inset 0 12px #222}
-#player{bottom:18px;left:calc(50% - 21px);background:#21d4fd}
+h1{color:#39e58c;margin:16px 0}
+#score{font-size:22px;color:#ffd447;margin:12px}
+#game{position:relative;width:min(94vw,360px);height:450px;margin:12px auto;background:#383838;border:4px solid white;overflow:hidden;border-radius:10px}
+.line{position:absolute;left:49%;width:5px;height:55px;background:white;pointer-events:none}
+.car{position:absolute;width:42px;height:65px;border:3px solid white;border-radius:8px;pointer-events:none}
+#player{background:#20cfff;bottom:15px;left:150px}
 .enemy{background:#fa4545}
-#overlay{position:absolute;inset:0;background:#000b;
-display:flex;flex-direction:column;justify-content:center;
-align-items:center;gap:12px}
-button{border:0;border-radius:12px;padding:13px 22px;
-font-size:18px;font-weight:bold;background:#39e58c;color:#102018}
-.controls{display:flex;justify-content:center;gap:35px;margin:12px}
-.controls button{width:100px;font-size:26px}
+#overlay{position:absolute;inset:0;background:#000b;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px}
+button{padding:14px 22px;border:0;border-radius:12px;background:#39e58c;color:#102018;font-size:20px;font-weight:bold;touch-action:manipulation;user-select:none;-webkit-user-select:none}
+.controls{display:flex;justify-content:center;gap:30px;margin:16px}
+.controls button{width:110px;height:65px;font-size:27px}
 </style>
 </head>
 <body>
 <h1>🏎️ GameZone Racing</h1>
-<p>Dodge the cars and make your high score!</p>
+<p>Doosri cars se bachao!</p>
 <div id="score">Score: 0</div>
 
 <div id="game">
   <div id="player" class="car"></div>
   <div id="overlay">
-    <h2 id="message">Ready to Race?</h2>
+    <h2 id="msg">Ready to Race?</h2>
     <button id="start">START GAME</button>
   </div>
 </div>
 
 <div class="controls">
-  <button id="left">⬅️</button>
-  <button id="right">➡️</button>
+  <button id="left" type="button">⬅️ LEFT</button>
+  <button id="right" type="button">RIGHT ➡️</button>
 </div>
-<p>Use arrow buttons to steer your car.</p>
+<p>Car chalane ke liye LEFT aur RIGHT dabao.</p>
 
 <script>
 const game=document.getElementById('game');
@@ -55,95 +48,111 @@ const player=document.getElementById('player');
 const overlay=document.getElementById('overlay');
 const start=document.getElementById('start');
 const scoreText=document.getElementById('score');
-let x=0,score=0,running=false,raf=0,last=0,spawn=0;
+
+let x=0,score=0,running=false,last=0,spawn=0,raf=0;
 let enemies=[],lines=[];
-const W=game.clientWidth,H=game.clientHeight,CW=42;
 
-function move(dir){
- if(!running)return;
- x=Math.max(8,Math.min(W-CW-8,x+dir*24));
- player.style.left=x+'px';
-function setupButton(id, direction) {
-  const btn = document.getElementById(id);
+function move(direction){
+  if(!running)return;
+  x=Math.max(5,Math.min(game.clientWidth-47,x+direction*25));
+  player.style.left=x+'px';
+}
 
-  btn.addEventListener('pointerdown', function(event) {
-    event.preventDefault();
+/* Mobile buttons: pointer, touch and click support */
+function setupButton(id,direction){
+  const button=document.getElementById(id);
+  button.addEventListener('pointerdown',function(e){
+    e.preventDefault();
     move(direction);
   });
-
-  btn.addEventListener('touchstart', function(event) {
-    event.preventDefault();
-    move(direction);
-  }, { passive: false });
-
-  btn.addEventListener('click', function(event) {
-    event.preventDefault();
+  button.addEventListener('click',function(e){
+    e.preventDefault();
     move(direction);
   });
 }
+setupButton('left',-1);
+setupButton('right',1);
 
-setupButton('left', -1);
-setupButton('right', 1);
-
-document.onkeydown=e=>{
- if(e.key==='ArrowLeft')move(-1);
- if(e.key==='ArrowRight')move(1);
-};
+document.addEventListener('keydown',function(e){
+  if(e.key==='ArrowLeft')move(-1);
+  if(e.key==='ArrowRight')move(1);
+});
 
 function reset(){
- cancelAnimationFrame(raf);
- enemies.forEach(e=>e.el.remove());
- lines.forEach(e=>e.el.remove());
- enemies=[];lines=[];score=0;spawn=0;last=0;
- x=W/2-CW/2;player.style.left=x+'px';
- scoreText.textContent='Score: 0';
- for(let i=0;i<6;i++){
-  let el=document.createElement('div');
-  el.className='roadline';
-  game.appendChild(el);
-  lines.push({el,y:i*95-30});
- }
+  cancelAnimationFrame(raf);
+  enemies.forEach(e=>e.el.remove());
+  lines.forEach(l=>l.el.remove());
+  enemies=[];lines=[];
+  score=0;spawn=0;last=0;
+  scoreText.textContent='Score: 0';
+  x=game.clientWidth/2-21;
+  player.style.left=x+'px';
+
+  for(let i=0;i<6;i++){
+    const el=document.createElement('div');
+    el.className='line';
+    game.appendChild(el);
+    lines.push({el:el,y:i*90-40});
+  }
 }
 
-function endGame(){
- running=false;
- overlay.style.display='flex';
- document.getElementById('message').textContent='Game Over! Score: '+score;
- start.textContent='PLAY AGAIN';
+function gameOver(){
+  running=false;
+  overlay.style.display='flex';
+  document.getElementById('msg').textContent='Game Over! Score: '+score;
+  start.textContent='PLAY AGAIN';
 }
 
 function loop(t){
- if(!running)return;
- let dt=Math.min((t-last)/16||1,2);last=t;
- lines.forEach(l=>{
-  l.y+=5*dt;if(l.y>H)l.y=-55;
-  l.el.style.top=l.y+'px';
- });
- spawn+=dt;
- if(spawn>48){
-  spawn=0;
-  let el=document.createElement('div');
-  el.className='car enemy';
-  let ex=12+Math.random()*(W-CW-24);
-  el.style.left=ex+'px';el.style.top='-70px';
-  game.appendChild(el);
-  enemies.push({el,x:ex,y:-70});
- }
- enemies.forEach(e=>{
-  e.y+=4*dt+Math.min(score/100,3);
-  e.el.style.top=e.y+'px';
-  if(e.y>H){e.y=-1000;score+=1;
-   scoreText.textContent='Score: '+score;}
-  if(e.y+60>H-85 && e.y<H-10 &&
-     e.x<x+CW-5 && e.x+CW-5>x+5)endGame();
- });
- enemies=enemies.filter(e=>e.y>-100);
- if(running)raf=requestAnimationFrame(loop);
+  if(!running)return;
+  const dt=Math.min((t-last)/16||1,2);
+  last=t;
+
+  lines.forEach(l=>{
+    l.y+=5*dt;
+    if(l.y>450)l.y=-55;
+    l.el.style.top=l.y+'px';
+  });
+
+  spawn+=dt;
+  if(spawn>48){
+    spawn=0;
+    const el=document.createElement('div');
+    el.className='car enemy';
+    const ex=8+Math.random()*(game.clientWidth-58);
+    el.style.left=ex+'px';
+    el.style.top='-70px';
+    game.appendChild(el);
+    enemies.push({el:el,x:ex,y:-70,passed:false});
+  }
+
+  for(const e of enemies){
+    e.y+=5*dt+Math.min(score/100,3);
+    e.el.style.top=e.y+'px';
+
+    if(e.y>450&&!e.passed){
+      e.passed=true;
+      score++;
+      scoreText.textContent='Score: '+score;
+    }
+
+    if(e.y>450-90&&e.y<450-15&&
+       e.x<x+37&&e.x+37>x+5){
+      gameOver();
+      break;
+    }
+  }
+
+  enemies=enemies.filter(e=>e.y<500);
+  if(running)raf=requestAnimationFrame(loop);
 }
-start.onclick=()=>{
- reset();overlay.style.display='none';running=true;
- raf=requestAnimationFrame(loop);
-};
+
+start.addEventListener('click',function(){
+  reset();
+  overlay.style.display='none';
+  running=true;
+  raf=requestAnimationFrame(loop);
+});
 </script>
 </body>
 </html>
