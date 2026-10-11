@@ -1,26 +1,37 @@
 
 
  
+      
 <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>GameZone Car Racing</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>GameZone Real Car Racing</title>
 <style>
-*{box-sizing:border-box;touch-action:manipulation}
+*{box-sizing:border-box}
 body{margin:0;background:#101827;color:white;font-family:Arial;text-align:center}
-h1{color:#39e58c;margin:16px 0}
+h1{color:#39e58c;margin:18px 0 8px}
 #score{font-size:22px;color:#ffd447;margin:12px}
-#game{position:relative;width:min(94vw,360px);height:450px;margin:12px auto;background:#383838;border:4px solid white;overflow:hidden;border-radius:10px}
-.line{position:absolute;left:49%;width:5px;height:55px;background:white;pointer-events:none}
-.car{position:absolute;width:42px;height:65px;border:3px solid white;border-radius:8px;pointer-events:none}
-#player{background:#20cfff;bottom:15px;left:150px}
-.enemy{background:#fa4545}
-#overlay{position:absolute;inset:0;background:#000b;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px}
-button{padding:14px 22px;border:0;border-radius:12px;background:#39e58c;color:#102018;font-size:20px;font-weight:bold;touch-action:manipulation;user-select:none;-webkit-user-select:none}
-.controls{display:flex;justify-content:center;gap:30px;margin:16px}
-.controls button{width:110px;height:65px;font-size:27px}
+#game{position:relative;width:min(94vw,360px);height:470px;margin:12px auto;background:linear-gradient(90deg,#242a30,#454b51 20%,#343a40 50%,#454b51 80%,#242a30);border:4px solid white;border-radius:12px;overflow:hidden}
+.roadline{position:absolute;left:49%;width:5px;height:55px;background:#fff;opacity:.9}
+.car{position:absolute;width:44px;height:72px;border-radius:13px 13px 8px 8px;border:2px solid #b8c6d3;box-shadow:inset 5px 0 5px #ffffff55,inset -5px 0 5px #0007,0 4px 5px #0008;background:linear-gradient(90deg,#0755a0,#29a8ff 35%,#0870d1 70%,#043d7d);z-index:2}
+.car:before{content:"";position:absolute;top:13px;left:7px;width:26px;height:21px;border-radius:8px 8px 4px 4px;background:linear-gradient(135deg,#b9e8ff,#19394f 55%,#061a2b);border:2px solid #9caeba}
+.car:after{content:"";position:absolute;left:5px;right:5px;top:39px;height:13px;border-radius:3px;background:linear-gradient(#202a35,#111820);border-top:2px solid #aab5c0;border-bottom:2px solid #aab5c0}
+#player{bottom:15px;left:150px}
+.enemy{background:linear-gradient(90deg,#8c1010,#ff4b45 35%,#d61919 70%,#730808)}
+.enemy.yellow{background:linear-gradient(90deg,#a56a00,#ffdf35 35%,#ffc400 70%,#865000)}
+.enemy.white{background:linear-gradient(90deg,#727b83,#fff 35%,#e0e6eb 70%,#737c85)}
+.enemy:before{background:linear-gradient(135deg,#c4efff,#254353 55%,#0c202c)}
+.enemy:after{background:linear-gradient(#252c34,#101820)}
+.light{position:absolute;top:5px;width:8px;height:5px;background:#ff2525;border-radius:3px;box-shadow:0 0 5px #ff2525}
+.light.left{left:3px}.light.right{right:3px}
+.enemy .light{background:#fff3a5;box-shadow:0 0 6px #fff3a5}
+#overlay{position:absolute;inset:0;background:#000b;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;z-index:5}
+button{border:0;border-radius:12px;background:#39e58c;color:#102018;padding:14px 20px;font-size:19px;font-weight:bold;touch-action:manipulation;user-select:none}
+.controls{display:flex;justify-content:center;gap:22px;margin:15px}
+.controls button{width:135px;height:62px;font-size:20px}
+p{padding:0 10px}
 </style>
 </head>
 <body>
@@ -29,16 +40,21 @@ button{padding:14px 22px;border:0;border-radius:12px;background:#39e58c;color:#1
 <div id="score">Score: 0</div>
 
 <div id="game">
-  <div id="player" class="car"></div>
-  <div id="overlay">
-    <h2 id="msg">Ready to Race?</h2>
-    <button id="start">START GAME</button>
-  </div>
+ <div class="roadline"></div>
+ <div class="roadline"></div>
+ <div class="roadline"></div>
+ <div id="player" class="car">
+  <span class="light left"></span><span class="light right"></span>
+ </div>
+ <div id="overlay">
+  <h2 id="msg">Ready to Race?</h2>
+  <button id="start">START GAME</button>
+ </div>
 </div>
 
 <div class="controls">
-  <button id="left" type="button">⬅️ LEFT</button>
-  <button id="right" type="button">RIGHT ➡️</button>
+ <button id="left">⬅ LEFT</button>
+ <button id="right">RIGHT ➡</button>
 </div>
 <p>Car chalane ke liye LEFT aur RIGHT dabao.</p>
 
@@ -48,111 +64,103 @@ const player=document.getElementById('player');
 const overlay=document.getElementById('overlay');
 const start=document.getElementById('start');
 const scoreText=document.getElementById('score');
-
 let x=0,score=0,running=false,last=0,spawn=0,raf=0;
 let enemies=[],lines=[];
 
-function move(direction){
-  if(!running)return;
-  x=Math.max(5,Math.min(game.clientWidth-47,x+direction*25));
-  player.style.left=x+'px';
+function move(d){
+ if(!running)return;
+ x=Math.max(5,Math.min(game.clientWidth-49,x+d*25));
+ player.style.left=x+'px';
 }
-
-/* Mobile buttons: pointer, touch and click support */
-function setupButton(id,direction){
-  const button=document.getElementById(id);
-  button.addEventListener('pointerdown',function(e){
-    e.preventDefault();
-    move(direction);
-  });
-  button.addEventListener('click',function(e){
-    e.preventDefault();
-    move(direction);
-  });
+function setupButton(id,d){
+ const b=document.getElementById(id);
+ b.addEventListener('pointerdown',e=>{
+  e.preventDefault();move(d);
+ });
+ b.addEventListener('click',e=>{
+  e.preventDefault();move(d);
+ });
 }
 setupButton('left',-1);
 setupButton('right',1);
 
-document.addEventListener('keydown',function(e){
-  if(e.key==='ArrowLeft')move(-1);
-  if(e.key==='ArrowRight')move(1);
+document.addEventListener('keydown',e=>{
+ if(e.key==='ArrowLeft')move(-1);
+ if(e.key==='ArrowRight')move(1);
 });
 
 function reset(){
-  cancelAnimationFrame(raf);
-  enemies.forEach(e=>e.el.remove());
-  lines.forEach(l=>l.el.remove());
-  enemies=[];lines=[];
-  score=0;spawn=0;last=0;
-  scoreText.textContent='Score: 0';
-  x=game.clientWidth/2-21;
-  player.style.left=x+'px';
+ cancelAnimationFrame(raf);
+ enemies.forEach(e=>e.el.remove());
+ lines.forEach(l=>l.el.remove());
+ enemies=[];lines=[];score=0;spawn=0;last=0;
+ scoreText.textContent='Score: 0';
+ x=game.clientWidth/2-22;
+ player.style.left=x+'px';
 
-  for(let i=0;i<6;i++){
-    const el=document.createElement('div');
-    el.className='line';
-    game.appendChild(el);
-    lines.push({el:el,y:i*90-40});
-  }
+ for(let i=0;i<5;i++){
+  const el=document.createElement('div');
+  el.className='roadline';
+  game.appendChild(el);
+  lines.push({el,y:i*105-40});
+ }
 }
 
 function gameOver(){
-  running=false;
-  overlay.style.display='flex';
-  document.getElementById('msg').textContent='Game Over! Score: '+score;
-  start.textContent='PLAY AGAIN';
+ running=false;
+ overlay.style.display='flex';
+ document.getElementById('msg').textContent='Game Over! Score: '+score;
+ start.textContent='PLAY AGAIN';
 }
 
 function loop(t){
-  if(!running)return;
-  const dt=Math.min((t-last)/16||1,2);
-  last=t;
+ if(!running)return;
+ const dt=Math.min((t-last)/16||1,2);last=t;
 
-  lines.forEach(l=>{
-    l.y+=5*dt;
-    if(l.y>450)l.y=-55;
-    l.el.style.top=l.y+'px';
-  });
+ lines.forEach(l=>{
+  l.y+=5*dt;
+  if(l.y>470)l.y=-55;
+  l.el.style.top=l.y+'px';
+ });
 
-  spawn+=dt;
-  if(spawn>48){
-    spawn=0;
-    const el=document.createElement('div');
-    el.className='car enemy';
-    const ex=8+Math.random()*(game.clientWidth-58);
-    el.style.left=ex+'px';
-    el.style.top='-70px';
-    game.appendChild(el);
-    enemies.push({el:el,x:ex,y:-70,passed:false});
+ spawn+=dt;
+ if(spawn>48){
+  spawn=0;
+  const el=document.createElement('div');
+  const types=['enemy','enemy yellow','enemy white'];
+  el.className='car '+types[Math.floor(Math.random()*types.length)];
+  const ex=8+Math.random()*(game.clientWidth-60);
+  el.style.left=ex+'px';
+  el.style.top='-80px';
+  el.innerHTML='<span class="light left"></span><span class="light right"></span>';
+  game.appendChild(el);
+  enemies.push({el,x:ex,y:-80,passed:false});
+ }
+
+ for(const e of enemies){
+  e.y+=5*dt+Math.min(score/100,3);
+  e.el.style.top=e.y+'px';
+
+  if(e.y>470&&!e.passed){
+   e.passed=true;score++;
+   scoreText.textContent='Score: '+score;
   }
-
-  for(const e of enemies){
-    e.y+=5*dt+Math.min(score/100,3);
-    e.el.style.top=e.y+'px';
-
-    if(e.y>450&&!e.passed){
-      e.passed=true;
-      score++;
-      scoreText.textContent='Score: '+score;
-    }
-
-    if(e.y>450-90&&e.y<450-15&&
-       e.x<x+37&&e.x+37>x+5){
-      gameOver();
-      break;
-    }
+  if(e.y>470-90&&e.y<470-15&&
+     e.x<x+39&&e.x+39>x+5){
+   gameOver();break;
   }
-
-  enemies=enemies.filter(e=>e.y<500);
-  if(running)raf=requestAnimationFrame(loop);
+ }
+ enemies=enemies.filter(e=>e.y<500);
+ if(running)raf=requestAnimationFrame(loop);
 }
 
-start.addEventListener('click',function(){
-  reset();
-  overlay.style.display='none';
-  running=true;
-  raf=requestAnimationFrame(loop);
+start.addEventListener('click',()=>{
+ reset();
+ overlay.style.display='none';
+ running=true;
+ raf=requestAnimationFrame(loop);
 });
 </script>
 </body>
 </html>
+
