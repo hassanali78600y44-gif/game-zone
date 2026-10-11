@@ -1,302 +1,159 @@
 
+
+        
 <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>GameZone - Play Free Games</title>
-
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>GameZone Tetris</title>
 <style>
-* {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-}
-
-body {
-  font-family: Arial, sans-serif;
-  background: #0b1020;
-  color: white;
-  line-height: 1.6;
-}
-
-header {
-  background: #111936;
-  padding: 18px 5%;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 14px;
-}
-
-.logo {
-  color: #39e58c;
-  font-size: 27px;
-  font-weight: bold;
-}
-
-nav {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 18px;
-}
-
-nav a {
-  color: white;
-  text-decoration: none;
-}
-
-nav a:hover {
-  color: #39e58c;
-}
-
-.hero {
-  text-align: center;
-  padding: 65px 18px;
-  background: linear-gradient(135deg, #18244b, #102f3a);
-}
-
-.hero h1 {
-  font-size: clamp(32px, 7vw, 52px);
-  margin-bottom: 12px;
-}
-
-.hero h1 span {
-  color: #39e58c;
-}
-
-.hero p {
-  color: #d1d9e8;
-  margin-bottom: 25px;
-}
-
-.search {
-  display: block;
-  width: min(100%, 420px);
-  padding: 14px;
-  margin: 0 auto;
-  border: 2px solid #344366;
-  border-radius: 12px;
-  background: #0b1020;
-  color: white;
-  font-size: 16px;
-  outline: none;
-}
-
-.search:focus {
-  border-color: #39e58c;
-}
-
-section {
-  padding: 38px 5%;
-}
-
-.section-title {
-  text-align: center;
-  font-size: 29px;
-  margin-bottom: 25px;
-}
-
-.section-title span {
-  color: #39e58c;
-}
-
-.games {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: 20px;
-  max-width: 1100px;
-  margin: auto;
-}
-
-.game-card {
-  background: #151e35;
-  border: 1px solid #283653;
-  border-radius: 16px;
-  padding: 24px 16px;
-  text-align: center;
-  transition: transform .2s, border-color .2s;
-}
-
-.game-card:hover {
-  transform: translateY(-4px);
-  border-color: #39e58c;
-}
-
-.game-icon {
-  font-size: 58px;
-  margin-bottom: 8px;
-}
-
-.game-card h3 {
-  font-size: 22px;
-  margin-bottom: 8px;
-}
-
-.game-card p {
-  color: #c0cbe0;
-  margin-bottom: 18px;
-}
-
-.play-btn {
-  display: inline-block;
-  background: #39e58c;
-  color: #102018;
-  text-decoration: none;
-  font-weight: bold;
-  padding: 12px 20px;
-  border-radius: 10px;
-}
-
-.play-btn:hover {
-  background: #20c875;
-}
-
-.racing .play-btn {
-  background: #ffd447;
-}
-
-.racing .play-btn:hover {
-  background: #ffbd24;
-}
-
-.no-results {
-  display: none;
-  text-align: center;
-  color: #ffd447;
-  padding: 20px;
-}
-
-.about {
-  background: #111936;
-  text-align: center;
-}
-
-.about p {
-  max-width: 650px;
-  margin: auto;
-  color: #cbd5e1;
-}
-
-footer {
-  background: #080c17;
-  text-align: center;
-  padding: 22px 12px;
-  color: #aab5c9;
-  font-size: 14px;
-}
-
-@media (max-width: 500px) {
-  header {
-    justify-content: center;
-    text-align: center;
-  }
-
-  nav {
-    justify-content: center;
-  }
-
-  .hero {
-    padding: 45px 15px;
-  }
-
-  section {
-    padding: 30px 15px;
-  }
-}
+*{box-sizing:border-box}
+body{margin:0;background:#0b1020;color:white;font-family:Arial;text-align:center}
+header{background:#172342;padding:15px}
+h1{color:#36e5ff;margin:0}
+a{color:#36e5ff}
+main{max-width:360px;margin:auto;padding:12px}
+.stats{display:flex;gap:8px;margin:12px 0}
+.stats div{background:#202e50;padding:12px;border-radius:8px;flex:1}
+canvas{width:min(100%,300px);height:auto;background:#070b15;border:2px solid #36e5ff}
+button{background:#293d68;color:white;border:0;border-radius:9px;padding:14px;margin:4px;font-size:18px;touch-action:manipulation}
+.controls{display:grid;grid-template-columns:repeat(3,1fr);max-width:300px;margin:auto}
 </style>
 </head>
-
 <body>
-
-<header>
-  <div class="logo">🎮 GameZone</div>
-
-  <nav>
-    <a href="#home">Home</a>
-    <a href="#games">Games</a>
-    <a href="#about">About</a>
-  </nav>
-</header>
-
+<header><h1>🎮 GAMEZONE</h1>
+<a href="index.html">← Home</a></header>
 <main>
-  <section class="hero" id="home">
-    <h1>Welcome to <span>GameZone!</span></h1>
-    <p>Play fun games on your mobile or computer.</p>
-
-    <input
-      class="search"
-      id="gameSearch"
-      type="search"
-      placeholder="🔍 Search games..."
-      aria-label="Search games"
-    >
-  </section>
-
-  <section id="games">
-    <h2 class="section-title">🔥 Popular <span>Games</span></h2>
-
-    <div class="games" id="gameList">
-
-      <article class="game-card" data-name="snake snake game">
-        <div class="game-icon">🐍</div>
-        <h3>Snake Game</h3>
-        <p>Eat apples, grow your snake and beat your score!</p>
-        <a class="play-btn" href="snake.html">▶ Play Snake</a>
-      </article>
-
-      <article class="game-card racing" data-name="car racing car racing game">
-        <div class="game-icon">🏎️</div>
-        <h3>Car Racing</h3>
-        <p>Dodge traffic and drive as far as you can.</p>
-        <a class="play-btn" href="car-racing.html">▶ Play Racing</a>
-      </article>
-
-    </div>
-
-    <p class="no-results" id="noResults">
-      No games found. Try another search!
-    </p>
-  </section>
-
-  <section class="about" id="about">
-    <h2 class="section-title">About <span>GameZone</span></h2>
-    <p>
-      Welcome to GameZone, your place for fun online games.
-      Choose a game, play on your phone, and enjoy!
-      More games can be added in the future.
-    </p>
-  </section>
+<h2>🧱 TETRIS</h2>
+<div class="stats">
+<div>Score<br><b id="score">0</b></div>
+<div>Lines<br><b id="lines">0</b></div>
+<div>Level<br><b id="level">1</b></div>
+</div>
+<canvas id="game" width="300" height="600"></canvas>
+<p><button id="start">▶ Start / Restart</button>
+<button id="pause">⏸ Pause</button></p>
+<div class="controls">
+<span></span><button id="rotate">↻</button><span></span>
+<button id="left">⬅</button>
+<button id="down">⬇</button>
+<button id="right">➡</button>
+</div>
+<p id="msg">Start dabayein!</p>
+<p>Keyboard: Arrow keys, Space = drop, P = pause</p>
 </main>
-
-<footer>
-  <p>© 2026 GameZone | Made for fun 🎮</p>
-</footer>
-
 <script>
-const searchInput = document.getElementById("gameSearch");
-const cards = document.querySelectorAll(".game-card");
-const noResults = document.getElementById("noResults");
+(()=>{
+const c=document.getElementById('game'),g=c.getContext('2d');
+const W=10,H=20,S=30;
+const colors=['','#35d9ff','#4778ff','#ff9e43','#ffe04b','#b45cff','#48ed91','#ff5577'];
+const forms=[
+[],[[1,1,1,1]],[[2,0,0],[2,2,2]],[[0,0,3],[3,3,3]],
+[[4,4],[4,4]],[[0,5,5],[5,5,0]],[[0,6,0],[6,6,6]],[[7,7,0],[0,7,7]]
+];
+let board,p,score=0,lines=0,level=1,run=false,pause=false,over=false,last=0,drop=0;
 
-searchInput.addEventListener("input", function () {
-  const query = this.value.toLowerCase().trim();
-  let visibleCount = 0;
-
-  cards.forEach(function (card) {
-    const name = card.dataset.name.toLowerCase();
-    const matches = name.includes(query);
-
-    card.style.display = matches ? "" : "none";
-
-    if (matches) {
-      visibleCount++;
-    }
-  });
-
-  noResults.style.display = visibleCount === 0 ? "block" : "none";
+function newBoard(){return Array.from({length:H},()=>Array(W).fill(0))}
+function spawn(){
+ let id=1+Math.floor(Math.random()*7),m=forms[id].map(r=>r.slice());
+ p={id,m,x:Math.floor((W-m[0].length)/2),y:0};
+ if(hit(p,0,0)){over=true;run=false;document.getElementById('msg').textContent='Game Over! Restart karein.'}
+}
+function hit(a,dx,dy,m=a.m){
+ for(let y=0;y<m.length;y++)for(let x=0;x<m[y].length;x++){
+  if(!m[y][x])continue;
+  let X=a.x+x+dx,Y=a.y+y+dy;
+  if(X<0||X>=W||Y>=H)return true;
+  if(Y>=0&&board[Y][X])return true;
+ }
+ return false;
+}
+function cell(x,y,id){
+ g.fillStyle=colors[id];g.fillRect(x*S+1,y*S+1,S-2,S-2);
+ g.fillStyle='#ffffff40';g.fillRect(x*S+3,y*S+3,S-6,3);
+}
+function draw(){
+ g.fillStyle='#070b15';g.fillRect(0,0,c.width,c.height);
+ g.strokeStyle='#19233a';
+ for(let x=0;x<=W;x++){g.beginPath();g.moveTo(x*S,0);g.lineTo(x*S,c.height);g.stroke()}
+ for(let y=0;y<=H;y++){g.beginPath();g.moveTo(0,y*S);g.lineTo(c.width,y*S);g.stroke()}
+ board.forEach((r,y)=>r.forEach((v,x)=>{if(v)cell(x,y,v)}));
+ if(p)p.m.forEach((r,y)=>r.forEach((v,x)=>{if(v&&p.y+y>=0)cell(p.x+x,p.y+y,v)}));
+ if(pause||over){
+  g.fillStyle='#000b';g.fillRect(0,0,300,600);
+  g.fillStyle='white';g.textAlign='center';g.font='bold 25px Arial';
+  g.fillText(over?'GAME OVER':'PAUSED',150,290);
+ }
+}
+function stats(){
+ document.getElementById('score').textContent=score;
+ document.getElementById('lines').textContent=lines;
+ document.getElementById('level').textContent=level;
+}
+function lock(){
+ p.m.forEach((r,y)=>r.forEach((v,x)=>{
+  if(v&&p.y+y>=0)board[p.y+y][p.x+x]=v;
+ }));
+ let n=0;
+ for(let y=H-1;y>=0;y--){
+  if(board[y].every(v=>v)){
+   board.splice(y,1);board.unshift(Array(W).fill(0));n++;y++;
+  }
+ }
+ if(n){score+=([0,100,300,500,800][n]||800)*level;lines+=n;level=1+Math.floor(lines/10);stats()}
+ spawn();
+}
+function move(dx,dy){
+ if(!run||pause||over)return false;
+ if(!hit(p,dx,dy)){p.x+=dx;p.y+=dy;return true}
+ if(dy>0)lock();
+ return false;
+}
+function rotate(){
+ if(!run||pause||over)return;
+ let m=p.m[0].map((_,i)=>p.m.map(r=>r[i]).reverse());
+ for(let k of [0,-1,1,-2,2])if(!hit(p,k,0,m)){p.x+=k;p.m=m;return}
+}
+function dropAll(){
+ if(!run||pause||over)return;
+ while(!hit(p,0,1)){p.y++;score+=2}
+ stats();lock();
+}
+function loop(t){
+ let dt=t-last;last=t;
+ if(run&&!pause&&!over){
+  drop+=dt;
+  if(drop>Math.max(100,700-(level-1)*50)){move(0,1);drop=0}
+ }
+ draw();requestAnimationFrame(loop);
+}
+function start(){
+ board=newBoard();score=0;lines=0;level=1;pause=false;over=false;run=true;drop=0;stats();spawn();
+ document.getElementById('pause').textContent='⏸ Pause';
+ document.getElementById('msg').textContent='Game chal rahi hai!';
+}
+document.getElementById('start').onclick=start;
+document.getElementById('pause').onclick=()=>{
+ if(!run||over)return;
+ pause=!pause;
+ document.getElementById('pause').textContent=pause?'▶ Resume':'⏸ Pause';
+};
+document.getElementById('left').onclick=()=>move(-1,0);
+document.getElementById('right').onclick=()=>move(1,0);
+document.getElementById('down').onclick=()=>{if(move(0,1)){score++;stats()}};
+document.getElementById('rotate').onclick=rotate;
+document.addEventListener('keydown',e=>{
+ if(['ArrowLeft','ArrowRight','ArrowDown','ArrowUp',' '].includes(e.key))e.preventDefault();
+ if(e.key==='ArrowLeft')move(-1,0);
+ if(e.key==='ArrowRight')move(1,0);
+ if(e.key==='ArrowDown'&&move(0,1)){score++;stats()}
+ if(e.key==='ArrowUp')rotate();
+ if(e.key===' ')dropAll();
+ if(e.key.toLowerCase()==='p')document.getElementById('pause').click();
 });
+board=newBoard();spawn();stats();requestAnimationFrame(loop);
+})();
 </script>
-
 </body>
 </html>
