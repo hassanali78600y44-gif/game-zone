@@ -1,0 +1,100 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>GameZone Cricket</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#091426;color:white;font-family:Arial;text-align:center}
+header{padding:18px;background:#172443}
+h1{color:#39e5ff;margin:0}
+main{max-width:500px;margin:auto;padding:16px}
+.field{background:#16834a;border:5px solid #35d878;border-radius:50%;height:300px;max-width:300px;margin:20px auto;position:relative;overflow:hidden}
+.pitch{position:absolute;left:35%;width:30%;height:75%;top:12%;background:#c6a16a;border:2px solid #f4d59b}
+.bat{position:absolute;bottom:35px;left:45%;font-size:40px}
+.ball{position:absolute;top:42%;left:47%;font-size:26px}
+.stumps{position:absolute;top:17%;left:45%;font-size:28px}
+.panel{background:#1d2b49;border-radius:12px;padding:14px;margin:8px}
+button{background:#29d7f0;color:#071326;border:0;border-radius:10px;padding:15px;margin:5px;font-weight:bold;font-size:17px}
+#hit{background:#ffcf4a}
+</style>
+</head>
+<body>
+<header><h1>🏏 GAMEZONE</h1><p><a href="index.html" style="color:#39e5ff">← Home</a></p></header>
+<main>
+<h2>🏏 Cricket Challenge</h2>
+<p>6 balls khelo aur maximum runs banao!</p>
+<div class="panel">
+Runs: <b id="runs">0</b> |
+Wickets: <b id="wickets">0</b> |
+Balls: <b id="balls">0</b>/6
+</div>
+<div class="field">
+<div class="pitch"></div>
+<div class="stumps">🥅</div>
+<div class="ball" id="ball">🔴</div>
+<div class="bat">🏏</div>
+</div>
+<h3 id="msg">Start dabao!</h3>
+<button id="start">▶ Start Game</button>
+<div>
+<button class="shot" data-shot="1">Defend</button>
+<button class="shot" data-shot="2">Normal Shot</button>
+<button class="shot" data-shot="3">Power Shot</button>
+</div>
+<p>Ball aane par shot button dabao. Timing aur luck se runs milenge!</p>
+</main>
+<script>
+let runs=0,wickets=0,balls=0,playing=false,waiting=false,timer;
+const $=id=>document.getElementById(id);
+function update(){
+ $('runs').textContent=runs;
+ $('wickets').textContent=wickets;
+ $('balls').textContent=balls;
+}
+$('start').onclick=()=>{
+ clearTimeout(timer);
+ runs=0;wickets=0;balls=0;playing=true;waiting=true;
+ $('msg').textContent='Ball aa rahi hai! Shot dabao!';
+ $('ball').textContent='🔴';
+ $('start').textContent='Restart Game';
+ update();nextBall();
+};
+function nextBall(){
+ if(!playing)return;
+ waiting=true;
+ $('ball').style.top='42%';
+ $('msg').textContent='Ready! Shot button dabao!';
+ timer=setTimeout(()=>{
+  if(waiting)result(0);
+ },2200);
+}
+function result(shot){
+ if(!playing||!waiting)return;
+ waiting=false;clearTimeout(timer);balls++;
+ const n=Math.random();
+ let scored=0;
+ if(n<0.12){wickets++;$('msg').textContent='OUT! Wicket gir gayi!'}
+ else{
+  const options=shot===1?[0,1,1,2]:shot===2?[0,1,2,2,4,4]:[0,0,1,4,6];
+  scored=options[Math.floor(Math.random()*options.length)];
+  runs+=scored;
+  $('msg').textContent=scored===0?'Dot ball!':scored===6?'SIX! 🚀':scored===4?'FOUR! 🏏':scored+' run(s)!';
+ }
+ $('ball').textContent=wickets>0&&n<0.12?'❌':'⚪';
+ update();
+ if(balls>=6||wickets>=3){
+  playing=false;
+  $('msg').textContent='Innings complete! Total score: '+runs+' runs.';
+  return;
+ }
+ timer=setTimeout(nextBall,1000);
+}
+document.querySelectorAll('.shot').forEach(b=>{
+ b.onclick=()=>result(Number(b.dataset.shot));
+});
+</script>
+</body>
+</html>
